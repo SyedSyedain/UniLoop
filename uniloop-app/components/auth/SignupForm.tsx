@@ -14,12 +14,12 @@ interface SignupFormProps {
 
 export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
   const { data, errors, loading, updateField, handleSubmit } = useSignupForm();
-  const [showPassword, setShowPassword]        = useState(false);
+  const [showPassword, setShowPassword]               = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
-      {/* Name row */}
+
       <div className="grid grid-cols-2 gap-3">
         <AnimatedInput
           icon={<User size={16} aria-hidden="true" />}
@@ -86,7 +86,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
             type="button"
             onClick={() => setShowPassword((v) => !v)}
             aria-label={showPassword ? "Hide password" : "Show password"}
-            className="text-white/30 hover:text-white/60 transition-colors"
+            className="text-slate-400 hover:text-slate-600 transition-colors"
           >
             {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
           </button>
@@ -106,7 +106,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
             type="button"
             onClick={() => setShowConfirmPassword((v) => !v)}
             aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-            className="text-white/30 hover:text-white/60 transition-colors"
+            className="text-slate-400 hover:text-slate-600 transition-colors"
           >
             {showConfirmPassword ? <EyeOff size={15} /> : <Eye size={15} />}
           </button>
@@ -123,13 +123,13 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
               aria-label="Accept terms and conditions"
             />
           </div>
-          <span className="text-xs text-white/38 leading-relaxed group-hover:text-white/55 transition-colors">
+          <span className="text-sm text-slate-500 leading-relaxed group-hover:text-slate-700 transition-colors">
             I agree to Uniloop&apos;s{" "}
-            <button type="button" className="text-gold-500 hover:underline font-semibold">
+            <button type="button" className="text-blue-600 hover:underline font-semibold">
               Terms of Service
             </button>{" "}
             and{" "}
-            <button type="button" className="text-gold-500 hover:underline font-semibold">
+            <button type="button" className="text-blue-600 hover:underline font-semibold">
               Privacy Policy
             </button>
           </span>
@@ -142,16 +142,17 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
 
       <GoldButton label="Create Account" loading={loading} />
 
-      <p className="text-center text-sm text-white/38 pt-1">
+      <p className="text-center text-sm text-slate-500 pt-1">
         Already have an account?{" "}
         <button
           type="button"
           onClick={onSwitchToLogin}
-          className="text-gold-500 hover:text-gold-400 font-bold transition-colors"
+          className="font-bold text-blue-600 hover:text-blue-700 transition-colors"
         >
           Sign in
         </button>
       </p>
+
     </form>
   );
 }

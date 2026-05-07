@@ -27,6 +27,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
+
       <AnimatedInput
         icon={<Mail size={16} aria-hidden="true" />}
         label="Email or Phone Number"
@@ -49,7 +50,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
             type="button"
             onClick={() => setShowPassword((v) => !v)}
             aria-label={showPassword ? "Hide password" : "Show password"}
-            className="text-white/30 hover:text-white/60 transition-colors"
+            className="text-slate-400 hover:text-slate-600 transition-colors"
           >
             {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
           </button>
@@ -63,14 +64,14 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
             onChange={() => updateField("remember", !data.remember)}
             aria-label="Remember me"
           />
-          <span className="text-xs text-white/38 group-hover:text-white/58 transition-colors">
+          <span className="text-sm text-slate-500 group-hover:text-slate-700 transition-colors">
             Remember me
           </span>
         </label>
 
         <button
           type="button"
-          className="text-xs text-gold-500 hover:text-gold-400 font-semibold transition-colors"
+          className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
         >
           Forgot password?
         </button>
@@ -78,32 +79,28 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
 
       <GoldButton label="Sign In" loading={loading} />
 
-      <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-white/[0.07]" />
-        <span className="text-[10px] text-white/22 font-semibold tracking-widest uppercase">
-          Or continue with
-        </span>
-        <div className="flex-1 h-px bg-white/[0.07]" />
+      <div className="form-divider">
+        <div className="form-divider-line" />
+        <span className="form-divider-label">Or continue with</span>
+        <div className="form-divider-line" />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <SocialButton label="Google" icon={GoogleIcon} />
-        <SocialButton
-          label="OTP Login"
-          icon={<Phone size={15} aria-hidden="true" />}
-        />
+        <SocialButton label="OTP Login" icon={<Phone size={15} aria-hidden="true" />} />
       </div>
 
-      <p className="text-center text-sm text-white/38 pt-1">
+      <p className="text-center text-sm text-slate-500 pt-1">
         Don&apos;t have an account?{" "}
         <button
           type="button"
           onClick={onSwitchToSignup}
-          className="text-gold-500 hover:text-gold-400 font-bold transition-colors"
+          className="font-bold text-blue-600 hover:text-blue-700 transition-colors"
         >
           Create one
         </button>
       </p>
+
     </form>
   );
 }

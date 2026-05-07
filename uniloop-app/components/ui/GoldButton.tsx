@@ -12,12 +12,13 @@ interface GoldButtonProps {
 export function GoldButton({ label, loading = false }: GoldButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
+  /* Subtle magnetic pull — restrained, not exaggerated */
   function onMouseMove(e: React.MouseEvent<HTMLButtonElement>) {
     const btn = ref.current;
     if (!btn) return;
     const rect = btn.getBoundingClientRect();
-    const x = (e.clientX - rect.left - rect.width / 2) * 0.12;
-    const y = (e.clientY - rect.top - rect.height / 2) * 0.12;
+    const x = (e.clientX - rect.left - rect.width  / 2) * 0.08;
+    const y = (e.clientY - rect.top  - rect.height / 2) * 0.08;
     btn.style.transform = `translate(${x}px, ${y}px)`;
   }
 
@@ -32,28 +33,23 @@ export function GoldButton({ label, loading = false }: GoldButtonProps) {
       disabled={loading}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      whileTap={{ scale: 0.97 }}
-      /*
-       * The `btn-gold` class runs the gradient + pulse animations.
-       * `btn-gold--loading` disables the shimmer ::after pseudo-element
-       * so it doesn't clash with the spinner while loading.
-       */
-      className={`btn-gold${loading ? " btn-gold--loading" : ""}`}
+      whileTap={{ scale: 0.98 }}
+      className="btn-primary"
       style={{
         transition:
-          "transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease",
+          "background-color 0.2s ease, box-shadow 0.2s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1)",
       }}
     >
-      <span className="btn-gold__inner">
+      <span className="btn-primary__inner">
         {loading ? (
           <>
-            <Loader2 size={15} className="animate-spin" />
-            Processing…
+            <Loader2 size={15} className="animate-spin" aria-hidden="true" />
+            <span>Processing…</span>
           </>
         ) : (
           <>
-            {label}
-            <ArrowRight size={15} />
+            <span>{label}</span>
+            <ArrowRight size={15} aria-hidden="true" />
           </>
         )}
       </span>
