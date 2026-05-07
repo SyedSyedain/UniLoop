@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//mnt/c/Users/syeds/OneDrive/Desktop/**)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "PowerShell(Get-Process -Name \"node\" -ErrorAction SilentlyContinue)",
+      "PowerShell($cssPath = \"C:\\\\Users\\\\syeds\\\\OneDrive\\\\Desktop\\\\UniLoop\\\\uniloop-app\\\\.next\\\\dev\\\\static\\\\chunks\\\\app_globals_css_0w3-wzy._.single.css\"; $content = Get-Content $cssPath -Raw; Write-Host \"CSS size: $\\($content.Length\\) bytes\"; $content | Select-String -Pattern \"auth-page|btn-gold|input-field|gold-500|navy-950\" | Select-Object -First 20)",
+      "PowerShell($css = Get-Content \"C:\\\\Users\\\\syeds\\\\OneDrive\\\\Desktop\\\\UniLoop\\\\uniloop-app\\\\.next\\\\dev\\\\static\\\\chunks\\\\app_globals_css_0w3-wzy._.single.css\" -Raw; @\\(\"auth-page\",\"btn-gold\",\"input-field\",\"\\\\.gold-500\",\"text-gold\",\"navy-950\"\\) | ForEach-Object { if \\($css -match $_\\) { Write-Host \"FOUND: $_\" } else { Write-Host \"MISSING: $_\" } })",
+      "PowerShell($css = Get-Content \"C:\\\\Users\\\\syeds\\\\OneDrive\\\\Desktop\\\\UniLoop\\\\uniloop-app\\\\.next\\\\dev\\\\static\\\\chunks\\\\app_globals_css_0w3-wzy._.single.css\" -Raw; $idx = $css.IndexOf\\(\"text-gold\"\\); $css.Substring\\([Math]::Max\\(0,$idx-20\\), 150\\))"
+    ]
+  }
+}
