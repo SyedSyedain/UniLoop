@@ -62,7 +62,7 @@ export function BrandPanel() {
         <ul className="brand-features" style={{ marginTop: "1.75rem" }} aria-label="Key features">
           {FEATURES.map((text, i) => (
             <motion.li
-              key={i}
+              key={text}
               className="brand-feature-item"
               custom={i}
               initial="hidden"

@@ -1,14 +1,18 @@
 import type { LoginFormData, SignupFormData, FormErrors } from "@/types/auth";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^\+?[\d\s\-()\\.]{10,}$/;
+const PHONE_RE = /^\+?[\d\s\-()\\.]{7,20}$/;
 
 export function isValidEmail(value: string): boolean {
   return EMAIL_RE.test(value.trim());
 }
 
+function countDigits(value: string): number {
+  return (value.match(/\d/g) ?? []).length;
+}
+
 export function isValidPhone(value: string): boolean {
-  return PHONE_RE.test(value.trim());
+  return PHONE_RE.test(value.trim()) && countDigits(value) >= 10;
 }
 
 export function validateLogin(data: LoginFormData): FormErrors {

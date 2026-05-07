@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, Mail, Phone, Lock, User, MapPin } from "lucide-react";
 import { AnimatedInput } from "@/components/ui/AnimatedInput";
-import { GoldButton }    from "@/components/ui/GoldButton";
+import { SubmitButton }  from "@/components/ui/SubmitButton";
 import { Checkbox }      from "@/components/ui/Checkbox";
 import { SchoolSelect }  from "@/components/ui/SchoolSelect";
 import { useSignupForm } from "@/hooks/useSignupForm";
@@ -140,7 +140,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
         )}
       </div>
 
-      <GoldButton label="Create Account" loading={loading} />
+      <SubmitButton label="Create Account" loading={loading} />
 
       <p className="text-center text-sm text-slate-500 pt-1">
         Already have an account?{" "}

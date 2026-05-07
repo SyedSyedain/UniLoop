@@ -1,48 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AnimatedInputProps {
-  icon: React.ReactNode;
-  label: string;
-  type?: string;
-  value: string;
-  onChange: (value: string) => void;
-  error?: string;
-  rightSlot?: React.ReactNode;
+  icon:          React.ReactNode;
+  label:         string;
+  type?:         string;
+  value:         string;
+  onChange:      (value: string) => void;
+  error?:        string;
+  rightSlot?:    React.ReactNode;
   autoComplete?: string;
 }
 
 export function AnimatedInput({
   icon,
   label,
-  type = "text",
+  type         = "text",
   value,
   onChange,
   error,
   rightSlot,
   autoComplete = "off",
 }: AnimatedInputProps) {
+  const inputId = useId();
   const [focused, setFocused] = useState(false);
-  // Label lifts when the field has a value OR is focused
   const isLifted = focused || value.length > 0;
 
   return (
     <div>
       {/*
-       * .input-field handles border, background, shadow via CSS :focus-within.
-       * No JS-driven !important overrides — CSS owns all visual state.
+       * .input-field owns all border/background/shadow state via CSS :focus-within.
+       * Framer Motion only animates layout (position + font-size) on the label.
+       * No JS-driven !important overrides anywhere.
        */}
       <div className={`input-field${error ? " input-field--error" : ""}`}>
         <span className="input-icon">{icon}</span>
 
         <div className="input-body">
-          {/*
-           * Framer Motion animates only layout properties (position, size).
-           * The label color is handled by CSS :focus-within to avoid conflicts.
-           */}
           <motion.label
+            htmlFor={inputId}
             className="input-label"
             animate={{
               top:      isLifted ? "6px"  : "50%",
@@ -55,6 +53,7 @@ export function AnimatedInput({
           </motion.label>
 
           <input
+            id={inputId}
             type={type}
             value={value}
             autoComplete={autoComplete}
@@ -73,8 +72,8 @@ export function AnimatedInput({
           <motion.p
             key="error"
             initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0  }}
+            exit={{    opacity: 0, y: -4 }}
             transition={{ duration: 0.18 }}
             className="input-error-msg"
           >

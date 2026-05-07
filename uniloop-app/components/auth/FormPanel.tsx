@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, AlertCircle } from "lucide-react";
 import { LoginForm }  from "@/components/auth/LoginForm";
 import { SignupForm } from "@/components/auth/SignupForm";
 import type { AuthMode } from "@/types/auth";
@@ -23,9 +23,21 @@ const HEADINGS: Record<AuthMode, { title: string; subtitle: string }> = {
   },
 };
 
-export function FormPanel() {
+const CALLBACK_ERRORS: Record<string, string> = {
+  callback_error: "Your confirmation link has expired or is invalid. Please sign up again or request a new link.",
+};
+
+interface FormPanelProps {
+  callbackError?: string;
+}
+
+export function FormPanel({ callbackError }: FormPanelProps) {
   const [mode, setMode] = useState<AuthMode>("login");
   const { title, subtitle } = HEADINGS[mode];
+
+  const errorMessage = callbackError
+    ? (CALLBACK_ERRORS[callbackError] ?? "Something went wrong. Please try again.")
+    : null;
 
   return (
     <section className="form-panel" aria-label="Authentication form">
@@ -41,7 +53,36 @@ export function FormPanel() {
         <span className="brand-logo-text" style={{ fontSize: "1rem" }}>uniloop</span>
       </div>
 
-      {/* Tab switcher */}
+      {/* Callback error banner — shown when email confirmation fails */}
+      <AnimatePresence>
+        {errorMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0  }}
+            exit={{    opacity: 0, y: -8 }}
+            transition={{ duration: 0.22 }}
+            role="alert"
+            style={{
+              display:      "flex",
+              alignItems:   "flex-start",
+              gap:          "0.625rem",
+              padding:      "0.75rem 1rem",
+              borderRadius: "0.75rem",
+              background:   "#FEF2F2",
+              border:       "1px solid #FECACA",
+              marginBottom: "1.25rem",
+              fontSize:     "0.8125rem",
+              color:        "#991B1B",
+              lineHeight:   1.55,
+            }}
+          >
+            <AlertCircle size={15} style={{ flexShrink: 0, marginTop: "1px", color: "#EF4444" }} aria-hidden="true" />
+            {errorMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Tab switcher — arrow keys cycle between tabs (ARIA tablist pattern) */}
       <div role="tablist" aria-label="Authentication mode" className="tab-bar">
         {TABS.map(({ mode: m, label }) => (
           <button
@@ -50,6 +91,12 @@ export function FormPanel() {
             role="tab"
             aria-selected={mode === m}
             onClick={() => setMode(m)}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                e.preventDefault();
+                setMode((prev) => (prev === "login" ? "signup" : "login"));
+              }
+            }}
             className={`tab-btn ${mode === m ? "tab-btn--active" : "tab-btn--inactive"}`}
           >
             {mode === m && (
@@ -79,24 +126,22 @@ export function FormPanel() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Form area */}
-      <div className={mode === "signup" ? "overflow-y-auto form-scroll max-h-[420px] pr-0.5" : ""}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`f-${mode}`}
-            initial={{ opacity: 0, x: mode === "signup" ? 16 : -16 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{    opacity: 0, x: mode === "signup" ? -16 : 16 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {mode === "login" ? (
-              <LoginForm  onSwitchToSignup={() => setMode("signup")} />
-            ) : (
-              <SignupForm onSwitchToLogin={()  => setMode("login")}  />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      {/* Form area — no overflow constraint so SchoolSelect dropdown isn't clipped */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`f-${mode}`}
+          initial={{ opacity: 0, x: mode === "signup" ? 16 : -16 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{    opacity: 0, x: mode === "signup" ? -16 : 16 }}
+          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {mode === "login" ? (
+            <LoginForm  onSwitchToSignup={() => setMode("signup")} />
+          ) : (
+            <SignupForm onSwitchToLogin={()  => setMode("login")}  />
+          )}
+        </motion.div>
+      </AnimatePresence>
 
     </section>
   );

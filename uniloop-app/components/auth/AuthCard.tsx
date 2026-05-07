@@ -4,7 +4,11 @@ import { motion } from "framer-motion";
 import { BrandPanel } from "@/components/auth/BrandPanel";
 import { FormPanel }  from "@/components/auth/FormPanel";
 
-export function AuthCard() {
+interface AuthCardProps {
+  callbackError?: string;
+}
+
+export function AuthCard({ callbackError }: AuthCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -14,7 +18,7 @@ export function AuthCard() {
     >
       <div className="flex">
         <BrandPanel />
-        <FormPanel  />
+        <FormPanel callbackError={callbackError} />
       </div>
     </motion.div>
   );

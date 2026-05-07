@@ -4,15 +4,14 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Loader2, ArrowRight } from "lucide-react";
 
-interface GoldButtonProps {
-  label: string;
+interface SubmitButtonProps {
+  label:    string;
   loading?: boolean;
 }
 
-export function GoldButton({ label, loading = false }: GoldButtonProps) {
+export function SubmitButton({ label, loading = false }: SubmitButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
-  /* Subtle magnetic pull — restrained, not exaggerated */
   function onMouseMove(e: React.MouseEvent<HTMLButtonElement>) {
     const btn = ref.current;
     if (!btn) return;

@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Building2, ChevronDown, Search, X } from "lucide-react";
-import { PARTNERED_SCHOOLS } from "@/constants/schools";
+import { Building2, ChevronDown, Search, X, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import type { School } from "@/types/database.types";
 import type { FormErrors } from "@/types/auth";
 
 interface SchoolSelectProps {
@@ -12,35 +13,66 @@ interface SchoolSelectProps {
   error?: FormErrors[string];
 }
 
-export function SchoolSelect({ value, onChange, error }: SchoolSelectProps) {
-  const [open, setOpen]     = useState(false);
-  const [query, setQuery]   = useState("");
-  const containerRef        = useRef<HTMLDivElement>(null);
+type FetchState = "loading" | "ready" | "error";
 
-  const filtered = PARTNERED_SCHOOLS.filter((s) =>
+export function SchoolSelect({ value, onChange, error }: SchoolSelectProps) {
+  const [open, setOpen]           = useState(false);
+  const [query, setQuery]         = useState("");
+  const [schools, setSchools]     = useState<School[]>([]);
+  const [fetchState, setFetchState] = useState<FetchState>("loading");
+  const containerRef              = useRef<HTMLDivElement>(null);
+
+  // Fetch the list of active partnered schools once on mount
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      const supabase = createClient();
+      const { data, error: fetchError } = await supabase
+        .from("schools")
+        .select("id, name, city, is_active, created_at")
+        .eq("is_active", true)
+        .order("name");
+
+      if (cancelled) return;
+
+      if (fetchError || !data) {
+        setFetchState("error");
+        return;
+      }
+
+      setSchools(data);
+      setFetchState("ready");
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
+  const filtered = schools.filter((s) =>
     s.name.toLowerCase().includes(query.toLowerCase())
   );
 
-  const selected = PARTNERED_SCHOOLS.find((s) => s.id === value);
+  const selected = schools.find((s) => s.id === value);
 
   // Close on outside click
   useEffect(() => {
-    function handleOutsideClick(e: MouseEvent) {
+    function onMouseDown(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
   }, []);
 
-  // Close on Escape key
+  // Close on Escape
   useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
+    function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
     }
-    if (open) document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    if (open) document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
   function handleSelect(id: string) {
@@ -49,34 +81,62 @@ export function SchoolSelect({ value, onChange, error }: SchoolSelectProps) {
     setQuery("");
   }
 
+  const triggerLabel =
+    fetchState === "loading" ? "Loading schools…"  :
+    fetchState === "error"   ? "Failed to load schools" :
+    selected                 ? selected.name        :
+                               "Select your school / college";
+
+  const triggerColor =
+    fetchState === "error" ? "#EF4444" :
+    selected               ? "#0F172A" :
+                             "#94A3B8";
+
   return (
     <div ref={containerRef} className="relative">
+      {/* Screen-reader announcement for async load/error state */}
+      <div role="status" aria-live="polite" className="sr-only">
+        {fetchState === "loading" && "Loading schools…"}
+        {fetchState === "error"   && "Failed to load schools. Please refresh."}
+        {fetchState === "ready"   && `${schools.length} schools available`}
+      </div>
+
       <button
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
+        disabled={fetchState !== "ready"}
         onClick={() => setOpen((prev) => !prev)}
-        className={`school-select-trigger${open ? " school-select-trigger--open" : ""}${error ? " school-select-trigger--error" : ""}`}
+        className={[
+          "school-select-trigger",
+          open   ? "school-select-trigger--open"  : "",
+          error  ? "school-select-trigger--error" : "",
+        ].join(" ").trim()}
       >
-        <Building2
-          size={16}
-          className="school-select-icon"
-          aria-hidden="true"
-        />
-        <span className={`flex-1 text-left text-sm font-medium truncate ${selected ? "text-[#F0EDE8]" : "text-white/30"}`}>
-          {selected ? selected.name : "Select your school / college"}
+        {fetchState === "error" ? (
+          <AlertCircle size={16} style={{ color: "#EF4444", flexShrink: 0 }} aria-hidden="true" />
+        ) : (
+          <Building2 size={16} className="school-select-icon" aria-hidden="true" />
+        )}
+
+        <span
+          className="flex-1 text-left text-sm font-medium truncate"
+          style={{ color: triggerColor }}
+        >
+          {triggerLabel}
         </span>
+
         <motion.span
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.22, ease: "easeOut" }}
           aria-hidden="true"
         >
-          <ChevronDown size={15} className="text-white/30" />
+          <ChevronDown size={15} style={{ color: "#CBD5E1" }} />
         </motion.span>
       </button>
 
       <AnimatePresence>
-        {open && (
+        {open && fetchState === "ready" && (
           <motion.div
             role="listbox"
             aria-label="Select institution"
@@ -87,11 +147,11 @@ export function SchoolSelect({ value, onChange, error }: SchoolSelectProps) {
             className="school-select-dropdown"
             style={{ transformOrigin: "top" }}
           >
-            {/* Search */}
             <div className="school-select-search">
               <Search size={13} aria-hidden="true" />
               <input
                 autoFocus
+                aria-label="Search institutions"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search institution…"
@@ -109,17 +169,23 @@ export function SchoolSelect({ value, onChange, error }: SchoolSelectProps) {
               )}
             </div>
 
-            {/* Options */}
             <ul className="school-select-list">
               {filtered.length === 0 ? (
                 <li className="school-select-empty">No institution found</li>
               ) : (
                 filtered.map((school) => (
-                  <li key={school.id} role="option" aria-selected={value === school.id}>
+                  <li
+                    key={school.id}
+                    role="option"
+                    aria-selected={value === school.id}
+                  >
                     <button
                       type="button"
                       onClick={() => handleSelect(school.id)}
-                      className={`school-select-option${value === school.id ? " school-select-option--selected" : ""}`}
+                      className={[
+                        "school-select-option",
+                        value === school.id ? "school-select-option--selected" : "",
+                      ].join(" ").trim()}
                     >
                       <span className="font-semibold">{school.name}</span>
                       <span className="school-select-city">{school.city}</span>
@@ -137,8 +203,8 @@ export function SchoolSelect({ value, onChange, error }: SchoolSelectProps) {
           <motion.p
             key="error"
             initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0  }}
+            exit={{    opacity: 0, y: -4 }}
             transition={{ duration: 0.18 }}
             className="input-error-msg"
           >

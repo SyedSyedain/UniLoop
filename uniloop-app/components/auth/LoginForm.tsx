@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, Phone } from "lucide-react";
 import { AnimatedInput } from "@/components/ui/AnimatedInput";
-import { GoldButton }    from "@/components/ui/GoldButton";
+import { SubmitButton }  from "@/components/ui/SubmitButton";
 import { Checkbox }      from "@/components/ui/Checkbox";
 import { SocialButton }  from "@/components/ui/SocialButton";
 import { useLoginForm }  from "@/hooks/useLoginForm";
@@ -30,11 +30,12 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
 
       <AnimatedInput
         icon={<Mail size={16} aria-hidden="true" />}
-        label="Email or Phone Number"
+        label="Email Address"
+        type="email"
         value={data.emailOrPhone}
         onChange={(v) => updateField("emailOrPhone", v)}
         error={errors.emailOrPhone}
-        autoComplete="username"
+        autoComplete="email"
       />
 
       <AnimatedInput
@@ -77,7 +78,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
         </button>
       </div>
 
-      <GoldButton label="Sign In" loading={loading} />
+      <SubmitButton label="Sign In" loading={loading} />
 
       <div className="form-divider">
         <div className="form-divider-line" />
