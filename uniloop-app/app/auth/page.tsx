@@ -1,7 +1,5 @@
 import { AuthCard } from "@/components/auth/AuthCard";
 
-// Server Component — reads searchParams so the callback route's
-// ?error=callback_error is surfaced to the user as a visible banner.
 interface AuthPageProps {
   searchParams: Promise<{ error?: string }>;
 }

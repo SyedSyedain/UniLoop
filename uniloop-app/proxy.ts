@@ -25,7 +25,7 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  // IMPORTANT: always call getUser() — this refreshes the session token
+  // IMPORTANT: always call getUser(); this refreshes the session token
   // and must not be skipped or the session will expire silently.
   // Wrapped in try-catch: if Supabase is unreachable we fail open (no crash)
   // so static routes and public pages still load.
@@ -47,7 +47,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Guard: authenticated users are redirected away from the auth page.
-  // IMPORTANT: only match the exact /auth path — NOT /auth/callback or
+  // IMPORTANT: only match the exact /auth path, not /auth/callback or
   // /auth/verify-email. Matching those sub-routes would intercept the
   // email-confirmation redirect before the code exchange can run.
   if (pathname === "/auth" && user) {

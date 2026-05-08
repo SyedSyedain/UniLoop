@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/dashboard";
 
-  // Determine the safe base URL — prefer the explicit env variable so that
+  // Determine the safe base URL. Prefer the explicit env variable so that
   // production deployments never accidentally redirect to localhost.
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??

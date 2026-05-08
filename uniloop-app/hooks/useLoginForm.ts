@@ -1,37 +1,17 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { useRouter } from "next/navigation";
-import type { LoginFormData, FormErrors } from "@/types/auth";
 import { validateLogin } from "@/lib/validation";
 import { mapLoginError } from "@/lib/auth-errors";
 import { createClient } from "@/lib/supabase/client";
-
-const INITIAL_DATA: LoginFormData = {
-  emailOrPhone: "",
-  password:     "",
-  remember:     false,
-};
+import { INITIAL_LOGIN_DATA } from "@/lib/auth/constants";
+import { useFormState } from "@/hooks/useFormState";
 
 export function useLoginForm() {
-  const [data, setData]       = useState<LoginFormData>(INITIAL_DATA);
-  const [errors, setErrors]   = useState<FormErrors>({});
-  const [loading, setLoading] = useState(false);
-  const router                = useRouter();
-
-  const updateField = useCallback(
-    <K extends keyof LoginFormData>(field: K, value: LoginFormData[K]) => {
-      setData((prev) => ({ ...prev, [field]: value }));
-      // Clear this field's error as soon as the user starts correcting it
-      setErrors((prev) => {
-        if (!(field in prev)) return prev;
-        const next = { ...prev };
-        delete next[field as string];
-        return next;
-      });
-    },
-    []
-  );
+  const { data, errors, loading, setErrors, setLoading, updateField } =
+    useFormState(INITIAL_LOGIN_DATA);
+  const router = useRouter();
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -64,7 +44,7 @@ export function useLoginForm() {
         setLoading(false);
       }
     },
-    [data, router]
+    [data, router, setErrors, setLoading]
   );
 
   return { data, errors, loading, updateField, handleSubmit };

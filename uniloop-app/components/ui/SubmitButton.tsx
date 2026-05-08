@@ -43,7 +43,7 @@ export function SubmitButton({ label, loading = false }: SubmitButtonProps) {
         {loading ? (
           <>
             <Loader2 size={15} className="animate-spin" aria-hidden="true" />
-            <span>Processing…</span>
+            <span>Processing...</span>
           </>
         ) : (
           <>

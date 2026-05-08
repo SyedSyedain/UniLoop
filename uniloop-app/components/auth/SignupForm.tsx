@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Phone, Lock, User, MapPin } from "lucide-react";
+import { Mail, Phone, Lock, User, MapPin } from "lucide-react";
 import { AnimatedInput } from "@/components/ui/AnimatedInput";
 import { SubmitButton }  from "@/components/ui/SubmitButton";
 import { Checkbox }      from "@/components/ui/Checkbox";
 import { SchoolSelect }  from "@/components/ui/SchoolSelect";
 import { useSignupForm } from "@/hooks/useSignupForm";
+import { PasswordToggle } from "@/components/auth/PasswordToggle";
 
 interface SignupFormProps {
   onSwitchToLogin: () => void;
@@ -82,14 +83,10 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
         error={errors.password}
         autoComplete="new-password"
         rightSlot={
-          <button
-            type="button"
-            onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
-          >
-            {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-          </button>
+          <PasswordToggle
+            visible={showPassword}
+            onToggle={() => setShowPassword((v) => !v)}
+          />
         }
       />
 
@@ -102,14 +99,10 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
         error={errors.confirmPassword}
         autoComplete="new-password"
         rightSlot={
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword((v) => !v)}
-            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
-          >
-            {showConfirmPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-          </button>
+          <PasswordToggle
+            visible={showConfirmPassword}
+            onToggle={() => setShowConfirmPassword((v) => !v)}
+          />
         }
       />
 

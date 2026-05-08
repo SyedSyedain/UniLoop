@@ -82,7 +82,7 @@ export function SchoolSelect({ value, onChange, error }: SchoolSelectProps) {
   }
 
   const triggerLabel =
-    fetchState === "loading" ? "Loading schools…"  :
+    fetchState === "loading" ? "Loading schools..."  :
     fetchState === "error"   ? "Failed to load schools" :
     selected                 ? selected.name        :
                                "Select your school / college";
@@ -96,7 +96,7 @@ export function SchoolSelect({ value, onChange, error }: SchoolSelectProps) {
     <div ref={containerRef} className="relative">
       {/* Screen-reader announcement for async load/error state */}
       <div role="status" aria-live="polite" className="sr-only">
-        {fetchState === "loading" && "Loading schools…"}
+        {fetchState === "loading" && "Loading schools..."}
         {fetchState === "error"   && "Failed to load schools. Please refresh."}
         {fetchState === "ready"   && `${schools.length} schools available`}
       </div>
@@ -154,7 +154,7 @@ export function SchoolSelect({ value, onChange, error }: SchoolSelectProps) {
                 aria-label="Search institutions"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search institution…"
+                placeholder="Search institution..."
                 className="school-select-search-input"
               />
               {query && (

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, Phone } from "lucide-react";
+import { Mail, Lock, Phone } from "lucide-react";
 import { AnimatedInput } from "@/components/ui/AnimatedInput";
 import { SubmitButton }  from "@/components/ui/SubmitButton";
 import { Checkbox }      from "@/components/ui/Checkbox";
 import { SocialButton }  from "@/components/ui/SocialButton";
 import { useLoginForm }  from "@/hooks/useLoginForm";
+import { PasswordToggle } from "@/components/auth/PasswordToggle";
 
 const GoogleIcon = (
   <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
@@ -47,14 +48,10 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
         error={errors.password}
         autoComplete="current-password"
         rightSlot={
-          <button
-            type="button"
-            onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
-          >
-            {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-          </button>
+          <PasswordToggle
+            visible={showPassword}
+            onToggle={() => setShowPassword((v) => !v)}
+          />
         }
       />
 
