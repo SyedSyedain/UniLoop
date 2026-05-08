@@ -1,12 +1,9 @@
 import { redirect } from "next/navigation";
+import { MarketplaceBrowse } from "@/components/marketplace/MarketplaceBrowse";
+import { listingsForSchool } from "@/lib/marketplace-demo";
 import { createClient } from "@/lib/supabase/server";
 
-const DASHBOARD_ACTIONS = [
-  { label: "Browse Listings", desc: "Find uniforms from families in your school." },
-  { label: "Create a Listing", desc: "Sell uniforms your children have outgrown." },
-  { label: "My Orders", desc: "Track purchases and sales in one place." },
-  { label: "My Profile", desc: "Update your details and school information." },
-] as const;
+const DEFAULT_SCHOOL = "Delhi Public School";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -18,28 +15,27 @@ export default async function DashboardPage() {
   if (!user) redirect("/auth");
 
   const meta = user.user_metadata as Record<string, string> | undefined;
-  const firstName = meta?.first_name ?? "";
-  const lastName = meta?.last_name ?? "";
-  const displayName = firstName ? `${firstName} ${lastName}`.trim() : user.email;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("first_name, school_id")
+    .eq("id", user.id)
+    .single();
 
-  return (
-    <div>
-      <section className="dashboard-hero">
-        <h1 className="dashboard-title">Welcome back, {displayName}</h1>
-        <p className="dashboard-subtitle">
-          Your Uniloop dashboard - buy and sell school uniforms within your community.
-        </p>
-      </section>
+  let schoolName = meta?.school_name ?? "";
+  if (profile?.school_id) {
+    const { data: school } = await supabase
+      .from("schools")
+      .select("name")
+      .eq("id", profile.school_id)
+      .single();
+    schoolName = school?.name ?? schoolName;
+  }
 
-      <section className="dashboard-grid" aria-label="Dashboard actions">
-        {DASHBOARD_ACTIONS.map(({ label, desc }) => (
-          <article key={label} className="dashboard-card">
-            <p className="dashboard-card__title">{label}</p>
-            <p className="dashboard-card__desc">{desc}</p>
-            <div className="dashboard-card__badge">Coming soon</div>
-          </article>
-        ))}
-      </section>
-    </div>
-  );
+  schoolName = schoolName || DEFAULT_SCHOOL;
+
+  const firstName = profile?.first_name ?? meta?.first_name ?? "";
+  const displayName = firstName || user.email?.split("@")[0] || "there";
+  const listings = listingsForSchool(schoolName);
+
+  return <MarketplaceBrowse displayName={displayName} schoolName={schoolName} listings={listings} />;
 }

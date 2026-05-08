@@ -27,23 +27,20 @@ export function useSignupForm() {
       try {
         const supabase = createClient();
 
-        // window.location.origin is the reliable client-side fallback;
-        // NEXT_PUBLIC_SITE_URL overrides it in production.
-        const siteUrl =
-          process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+        // Use the exact host the user is currently on so verification links
+        // always return to the same environment (local/dev/prod).
+        const siteUrl = window.location.origin.replace(/\/$/, "");
 
         const { error } = await supabase.auth.signUp({
-          email:    data.email.trim(),
+          email: data.email.trim(),
           password: data.password,
           options: {
-            // Persisted in auth.users.raw_user_meta_data; the DB trigger reads
-            // these values to create the matching row in public.profiles.
             data: {
               first_name: data.firstName.trim(),
-              last_name:  data.lastName.trim(),
-              phone:      data.phone.trim(),
-              address:    data.address.trim(),
-              school_id:  data.schoolId,
+              last_name: data.lastName.trim(),
+              phone: data.phone.trim(),
+              address: data.address.trim(),
+              school_id: data.schoolId,
             },
             emailRedirectTo: `${siteUrl}/auth/callback`,
           },

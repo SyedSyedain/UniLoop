@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Mail } from "lucide-react";
 import { AppLogo } from "@/components/brand/AppLogo";
 
@@ -35,7 +35,7 @@ export default function VerifyEmailPage() {
         </p>
       </section>
 
-      <footer className="auth-footer">© 2026 Uniloop · Made in India</footer>
+      <footer className="auth-footer">(c) 2026 Uniloop | Made in India</footer>
     </main>
   );
 }

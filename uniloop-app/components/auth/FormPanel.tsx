@@ -11,15 +11,26 @@ import type { AuthMode } from "@/types/auth";
 
 interface FormPanelProps {
   callbackError?: string;
+  callbackReason?: string;
 }
 
-export function FormPanel({ callbackError }: FormPanelProps) {
+function safeDecode(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+export function FormPanel({ callbackError, callbackReason }: FormPanelProps) {
   const [mode, setMode] = useState<AuthMode>("login");
   const { title, subtitle } = AUTH_HEADINGS[mode];
 
-  const errorMessage = callbackError
+  const fallbackError = callbackError
     ? (CALLBACK_ERRORS[callbackError] ?? "Something went wrong. Please try again.")
     : null;
+  const reasonMessage = callbackReason ? safeDecode(callbackReason).slice(0, 180) : null;
+  const errorMessage = reasonMessage ?? fallbackError;
 
   return (
     <section className="form-panel" aria-label="Authentication form">
