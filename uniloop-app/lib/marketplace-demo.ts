@@ -19,6 +19,18 @@ export interface MarketplaceListing {
   listedHoursAgo: number;
 }
 
+export type UniformSeason = "Summer" | "Winter" | "All Season";
+
+export interface ListingDetailAttributes {
+  description: string;
+  colors: string[];
+  season: UniformSeason;
+  type: string;
+  availableSizes: string[];
+  material: string;
+  includes: string[];
+}
+
 export const CATEGORY_FILTERS: readonly string[] = [
   "All",
   "Uniform",
@@ -272,4 +284,135 @@ export function listingsForSchool(registeredSchool: string) {
   return MARKETPLACE_LISTINGS.filter((listing) =>
     schoolMatches(listing.schoolName, registeredSchool)
   );
+}
+
+export function findListingById(id: string) {
+  return MARKETPLACE_LISTINGS.find((listing) => listing.id === id) ?? null;
+}
+
+const LISTING_DETAIL_ATTRIBUTES: Partial<Record<string, ListingDetailAttributes>> = {
+  "dps-1": {
+    description:
+      "Complete daily-wear school uniform set in excellent condition. Clean finish, reinforced buttons, and crisp collar shape make it ready for immediate use.",
+    colors: ["Sky Blue", "Navy Blue", "White"],
+    season: "All Season",
+    type: "Regular School Uniform",
+    availableSizes: ["S", "M", "L"],
+    material: "Cotton blend",
+    includes: ["2 shirts", "1 trouser", "1 school tie"],
+  },
+  "dps-4": {
+    description:
+      "Premium winter blazer bundle with matching tie. Ideal for school assemblies and colder months with a proper structured fit.",
+    colors: ["Navy Blue", "Maroon"],
+    season: "Winter",
+    type: "Winter Blazer Set",
+    availableSizes: ["M", "L", "XL"],
+    material: "Wool blend",
+    includes: ["1 blazer", "1 tie"],
+  },
+  "dps-6": {
+    description:
+      "Comfortable junior-class shirt and trouser combo suitable for everyday classes. Soft fabric with durable stitching for active school days.",
+    colors: ["White", "Steel Grey"],
+    season: "Summer",
+    type: "Junior Uniform Combo",
+    availableSizes: ["XS", "S", "M"],
+    material: "Breathable cotton",
+    includes: ["1 shirt", "1 trouser"],
+  },
+  "nps-1": {
+    description:
+      "School blazer with crest maintained carefully and dry-cleaned recently. Perfect for formal days and school events.",
+    colors: ["Deep Blue"],
+    season: "Winter",
+    type: "Formal Crest Blazer",
+    availableSizes: ["S", "M", "L"],
+    material: "Wool blend",
+    includes: ["1 blazer"],
+  },
+  "bc-1": {
+    description:
+      "Set of senior uniform shirts with firm collars and no yellowing. A practical pack for regular week rotation.",
+    colors: ["White", "Light Blue"],
+    season: "All Season",
+    type: "Senior Shirt Pack",
+    availableSizes: ["M", "L", "XL"],
+    material: "Cotton poly blend",
+    includes: ["3 uniform shirts"],
+  },
+};
+
+const LISTING_IMAGE_GALLERIES: Partial<Record<string, string[]>> = {
+  "dps-1": [
+    "/marketplace/uniform-1.svg",
+    "/marketplace/uniform-4.svg",
+    "/marketplace/uniform-6.svg",
+    "/marketplace/uniform-10.svg",
+  ],
+  "dps-4": [
+    "/marketplace/uniform-4.svg",
+    "/marketplace/uniform-1.svg",
+    "/marketplace/uniform-7.svg",
+    "/marketplace/uniform-10.svg",
+  ],
+  "dps-6": [
+    "/marketplace/uniform-6.svg",
+    "/marketplace/uniform-1.svg",
+    "/marketplace/uniform-3.svg",
+    "/marketplace/uniform-11.svg",
+  ],
+  "nps-1": [
+    "/marketplace/uniform-7.svg",
+    "/marketplace/uniform-1.svg",
+    "/marketplace/uniform-4.svg",
+    "/marketplace/uniform-10.svg",
+  ],
+  "bc-1": [
+    "/marketplace/uniform-10.svg",
+    "/marketplace/uniform-1.svg",
+    "/marketplace/uniform-4.svg",
+    "/marketplace/uniform-12.svg",
+  ],
+};
+
+export function getListingDetails(listing: MarketplaceListing): ListingDetailAttributes {
+  const selected = LISTING_DETAIL_ATTRIBUTES[listing.id];
+  if (selected) return selected;
+
+  const season: UniformSeason =
+    listing.title.toLowerCase().includes("winter") || listing.title.toLowerCase().includes("blazer")
+      ? "Winter"
+      : "All Season";
+
+  return {
+    description:
+      "Well-maintained school item with clean finish and verified seller history. Suitable for students looking for quality at better value.",
+    colors: ["Standard School Color"],
+    season,
+    type: listing.category === "Uniform" ? "School Uniform" : `${listing.category} Item`,
+    availableSizes: [listing.size],
+    material: "School-grade fabric",
+    includes: [listing.title],
+  };
+}
+
+export function getListingGallery(listing: MarketplaceListing) {
+  const gallery = LISTING_IMAGE_GALLERIES[listing.id] ?? listing.images;
+  return Array.from(new Set([...listing.images, ...gallery]));
+}
+
+export function getRelatedListings(currentListing: MarketplaceListing, limit = 4) {
+  const sameSchool = MARKETPLACE_LISTINGS.filter(
+    (listing) => listing.id !== currentListing.id && listing.schoolName === currentListing.schoolName
+  );
+
+  const prioritized = sameSchool.sort((a, b) => {
+    const aCategoryMatch = a.category === currentListing.category ? 1 : 0;
+    const bCategoryMatch = b.category === currentListing.category ? 1 : 0;
+    if (aCategoryMatch !== bCategoryMatch) return bCategoryMatch - aCategoryMatch;
+    return b.qualityScore - a.qualityScore;
+  });
+
+  return prioritized.slice(0, limit);
 }

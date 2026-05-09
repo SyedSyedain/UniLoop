@@ -2,6 +2,7 @@
 
 import { Search, ShieldCheck, SlidersHorizontal, Star } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   CATEGORY_FILTERS,
@@ -208,9 +209,9 @@ export function MarketplaceBrowse({ displayName, schoolName, listings = [] }: Ma
                       <div className="listing-original">was {formatInr(listing.originalPriceInr)}</div>
                       <div className="listing-savings">Save {formatInr(savings)}</div>
                     </div>
-                    <button className="purchase-button" type="button">
+                    <Link className="purchase-button" href={`/marketplace-preview/${listing.id}`}>
                       View and Purchase
-                    </button>
+                    </Link>
                   </div>
                 </article>
               );
